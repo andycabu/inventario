@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>inventario</title>
+    <link rel="stylesheet" href="./css/styles.css" />
+  </head>
+  <body>
+    <h1>Inventario de Productos</h1>
+    <div class="container">
+      <div id="form-container">
+        <h2>Agregar Producto</h2>
+        <form id="product-form">
+          <input
+            type="text"
+            id="nombre"
+            placeholder="Nombre del Producto"
+            required
+          />
+          <input
+            type="text"
+            id="referencia"
+            placeholder="Referencia"
+            required
+          />
+          <input type="date" id="fecha-caducidad" required />
+          <input type="text" id="categoria" placeholder="Categoría" required />
+          <input type="number" id="stock" placeholder="Stock" required />
+          <button class="bg-sky-500" type="submit">Agregar</button>
+        </form>
+      </div>
+      <div id="table-container">
+        <h2>Lista de Productos</h2>
+        <input type="text" id="search" placeholder="Buscar por nombre" />
+        <table id="product-table">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Referencia</th>
+              <th>Fecha de Caducidad</th>
+              <th>Categoría</th>
+              <th>Stock</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+    <script src="./js/main.js"></script>
+  </body>
+</html>
