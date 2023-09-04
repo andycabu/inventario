@@ -71,6 +71,51 @@ const productos = [
     }
 ]
 
+const mongoose = require('mongoose');
+
+// Configura la conexión a la base de datos
+mongoose.connect('mongodb://localhost:27017', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+
+const db = mongoose.connection;
+
+// Manejar eventos de conexión
+db.on('error', console.error.bind(console, 'Error de conexión a MongoDB:'));
+db.once('open', () => {
+  console.log('Conexión exitosa a MongoDB');
+});
+
+// Define el esquema del producto
+const productoSchema = new mongoose.Schema({
+    nombre: String,
+    referencia: String,
+    fechaCaducidad: Date,
+    categoria: String,
+    stock: Number,
+  });
+  
+  // Crea el modelo 'Producto' a partir del esquema
+  const Producto = mongoose.model('Producto', productoSchema);
+
+  const nuevoProducto = new Producto({
+    nombre: 'Producto de ejemplo',
+    referencia: 'REF123',
+    fechaCaducidad: new Date('2023-12-31'),
+    categoria: 'Electrónica',
+    stock: 10,
+  });
+  
+  // Guarda el nuevo producto en la base de datos
+  nuevoProducto.save((err) => {
+    if (err) {
+      console.error('Error al guardar el producto:', err);
+    } else {
+      console.log('Producto guardado con éxito');
+    }
+  });
+
 
 const productForm = document.getElementById('product-form');
 const productTable = document.getElementById('product-table');
@@ -152,7 +197,6 @@ function guardarCambiosStock(event) {
         const nuevoStock = event.target.textContent.trim(); 
 
         if (nuevoStock === '') {
-            
             event.target.textContent = productos[index].stock;
         } else if (!isNaN(nuevoStock)) {
            
