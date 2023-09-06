@@ -2,27 +2,10 @@ const productForm = document.getElementById("product-form");
 const productTable = document.getElementById("product-table");
 const searchInput = document.getElementById("search");
 
-// main.js
-
 // Función para obtener productos desde el servidor
-function obtenerProductos() {
-  fetch("/") // Reemplaza "/productos" con la ruta correcta de tu servidor
-    .then((response) => {
-      console.log(response.json());
-      if (!response.ok) {
-        throw new Error("No se pudo obtener la respuesta del servidor.");
-      }
-      return response.json(); // Analizar la respuesta JSON
-    })
-    .then((data) => {
-      const productos = data.productos; // Supongamos que los productos están en data.productos
-      // Haz lo que necesites con los productos aquí, por ejemplo, actualizar la tabla
-      actualizarTabla(productos);
-    })
-    .catch((error) => {
-      console.error("Error al obtener productos:", error);
-    });
-}
+fetch("/")
+  .then((response) => response.json())
+  .then((data) => console.log(data));
 
 // Llama a la función para obtener productos cuando la página se carga
 window.addEventListener("load", obtenerProductos);

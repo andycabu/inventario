@@ -6,7 +6,7 @@ const router = Router();
 router.get("/", async (req, res) => {
   const productos = await Productos.find().lean();
 
-  res.render("index", { productos: productos });
+  res.render("index", productos);
 });
 
 router.post("/productos/agregar", async (req, res) => {
