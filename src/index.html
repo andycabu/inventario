@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -11,19 +11,17 @@
     <div class="container">
       <div id="form-container">
         <h2>Agregar Producto</h2>
-        <form id="product-form">
+        <form id="product-form" action="/productos/agregar" method="POST">
           <input
             type="text"
             id="nombre"
             placeholder="Nombre del Producto"
-            required
-          />
+            required />
           <input
             type="text"
             id="referencia"
             placeholder="Referencia"
-            required
-          />
+            required />
           <input type="date" id="fecha-caducidad" required />
           <input type="text" id="categoria" placeholder="Categoría" required />
           <input type="number" id="stock" placeholder="Stock" required />

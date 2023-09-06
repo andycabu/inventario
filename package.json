@@ -5,14 +5,24 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "styles": "npx tailwindcss -i ./css/config.css -o ./css/styles.css --watch"
+    "styles": "npx tailwindcss -i .src/css/config.css -o .src/css/styles.css --watch",
+    "dev": "nodemon --exec babel-node src/index.js"
   },
   "author": "andycabu",
   "license": "ISC",
   "devDependencies": {
+    "@babel/cli": "^7.22.15",
+    "@babel/core": "^7.22.15",
+    "@babel/node": "^7.22.15",
+    "@babel/preset-env": "^7.22.15",
+    "nodemon": "^3.0.1",
     "tailwindcss": "^3.3.3"
   },
   "dependencies": {
-    "mongoose": "^7.5.0"
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "express-handlebars": "^7.1.2",
+    "mongoose": "^7.5.0",
+    "morgan": "^1.10.0"
   }
 }
