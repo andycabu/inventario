@@ -1,6 +1,7 @@
+require("dotenv").config();
 import { connect } from "mongoose";
 
-const SERVER = "mongodb://127.0.0.1:27017/inventario";
+const SERVER = process.env.MONGODB_URI;
 
 (async () => {
   try {
