@@ -3,10 +3,14 @@ import Productos from "../models/Productos.js";
 
 const router = Router();
 
-router.get("/", async (req, res) => {
+router.get("/", (req, res) => {
+  res.render("index");
+});
+
+router.get("/productos", async (req, res) => {
   const productos = await Productos.find().lean();
 
-  res.render("index", productos);
+  res.json(productos);
 });
 
 router.post("/productos/agregar", async (req, res) => {
@@ -17,6 +21,21 @@ router.post("/productos/agregar", async (req, res) => {
   } catch (error) {
     console.log(error);
   }
+});
+
+router.get("/productos/buscar", async (req, res) => {
+  const { nombre } = req.query;
+  const productosEncontrados = await Productos.find({
+    nombre: { $regex: nombre, $options: "i" },
+  }).lean();
+
+  res.json({ productosEncontrados });
+});
+
+router.get("/productos/eliminar/:id", async (req, res) => {
+  const { id } = req.params;
+  await Productos.findByIdAndDelete(id);
+  res.redirect("/");
 });
 
 // router.get("/update/:id", async (req, res) => {
