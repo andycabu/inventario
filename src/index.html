@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -11,28 +11,47 @@
     <div class="container">
       <div id="form-container">
         <h2>Agregar Producto</h2>
-        <form id="product-form">
+        <form id="productForm" method="POST">
           <input
             type="text"
             id="nombre"
+            name="nombre"
+            for="nombre"
             placeholder="Nombre del Producto"
-            required
-          />
+            required />
           <input
             type="text"
             id="referencia"
+            name="referencia"
+            for="referencia"
             placeholder="Referencia"
-            required
-          />
-          <input type="date" id="fecha-caducidad" required />
-          <input type="text" id="categoria" placeholder="Categoría" required />
-          <input type="number" id="stock" placeholder="Stock" required />
+            required />
+          <input
+            type="date"
+            id="fechaCaducidad"
+            name="fechaCaducidad"
+            for="fechaCaducidad"
+            required />
+          <input
+            type="text"
+            id="categoria"
+            name="categoria"
+            for="categoria"
+            placeholder="Categoría"
+            required />
+          <input
+            type="number"
+            id="stock"
+            name="stock"
+            for="stock"
+            placeholder="Stock"
+            required />
           <button class="bg-sky-500" type="submit">Agregar</button>
         </form>
       </div>
       <div id="table-container">
         <h2>Lista de Productos</h2>
-        <input type="text" id="search" placeholder="Buscar por nombre" />
+        <input type="text" id="inputBusqueda" placeholder="Buscar por nombre" />
         <table id="product-table">
           <thead>
             <tr>
