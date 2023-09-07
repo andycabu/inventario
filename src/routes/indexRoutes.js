@@ -9,7 +9,6 @@ router.get("/", (req, res) => {
 
 router.get("/productos", async (req, res) => {
   const productos = await Productos.find().lean();
-
   res.json(productos);
 });
 
@@ -17,7 +16,7 @@ router.post("/productos/agregar", async (req, res) => {
   try {
     const productos = Productos(req.body);
     await productos.save();
-    res.redirect("/");
+    res.redirect("/productos");
   } catch (error) {
     console.log(error);
   }
@@ -35,17 +34,14 @@ router.get("/productos/buscar", async (req, res) => {
 router.get("/productos/eliminar/:id", async (req, res) => {
   const { id } = req.params;
   await Productos.findByIdAndDelete(id);
-  res.redirect("/");
+  res.redirect("/productos");
 });
 
-// router.get("/update/:id", async (req, res) => {
-//   try {
-//     const producto = await Productos.findById(req.params.id).lean();
-//     res.render("editar", { producto: producto });
-//   } catch (error) {
-//     console.log(error.message);
-//   }
-// });
+router.get("/productos/editar/:id", async (req, res) => {
+  const { id } = req.params;
+  await Productos.findByIdAndUpdate(id, req.body);
+  res.redirect("/productos");
+});
 
 // router.get("/update/:id", async (req, res) => {
 //   const { id } = req.params;

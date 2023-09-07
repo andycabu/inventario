@@ -1,9 +1,10 @@
-const productForm = document.getElementById("product-form");
+const productForm = document.getElementById("productForm");
 const productTable = document.getElementById("product-table");
 const searchInput = document.getElementById("inputBusqueda");
+const prueba = document.getElementById("prueba");
 
 // Función para obtener productos desde el servidor
-const productos = [];
+let productos = [];
 
 function obtenerProductos() {
   fetch("/productos")
@@ -22,7 +23,7 @@ function obtenerProductos() {
 function actualizarTabla(productosEncontrados = productos) {
   const tbody = document.querySelector("tbody");
   tbody.innerHTML = "";
-  productosEncontrados.forEach((producto, index) => {
+  productosEncontrados.forEach((producto) => {
     const row = document.createElement("tr");
     const fechaISO8601 = producto.fechaCaducidad;
     const fecha = new Date(fechaISO8601);
@@ -33,19 +34,61 @@ function actualizarTabla(productosEncontrados = productos) {
         <td>${producto.referencia}</td>
         <td>${fechaFormateada}</td>
         <td>${producto.categoria}</td>
-        <td class="editable" contentEditable="true" data-index="${index}">${producto.stock}</td>
+        <td class="editable" id="prueba" contentEditable="true" data-id="${producto._id}">${producto.stock}</td>
         <td>
-            <button class="delete" data-index="${index}">Eliminar</button>
+            <button  class="delete" data-id="${producto._id}">Eliminar</button>
         </td>
     `;
     tbody.appendChild(row);
   });
 }
 
+function añadirProducto(event) {
+  event.preventDefault();
+  const nombre = document.getElementById("nombre").value;
+  const referencia = document.getElementById("referencia").value;
+  const fechaCaducidad = document.getElementById("fechaCaducidad").value;
+  const categoria = document.getElementById("categoria").value;
+  const stock = document.getElementById("stock").value;
+
+  const producto = {
+    nombre,
+    referencia,
+    fechaCaducidad,
+    categoria,
+    stock,
+  };
+
+  fetch("/productos/agregar", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(producto),
+  })
+    .then((res) => {
+      if (res.status) {
+        res.json().then((data) => {
+          productos = data;
+          actualizarTabla(productos);
+        });
+        // Si la inserción fue exitosa, actualiza la interfaz de usuario
+      } else {
+        // Manejo de errores: muestra un mensaje de error o realiza otra acción en caso de error
+        console.error("Error al insertar el producto.");
+      }
+    })
+    .catch((error) => {
+      console.error("Error al insertar el producto:", error);
+    });
+
+  limpiarFormulario();
+}
+
 function limpiarFormulario() {
   document.getElementById("nombre").value = "";
   document.getElementById("referencia").value = "";
-  document.getElementById("fecha-caducidad").value = "";
+  document.getElementById("fechaCaducidad").value = "";
   document.getElementById("categoria").value = "";
   document.getElementById("stock").value = "";
 }
@@ -53,18 +96,15 @@ function limpiarFormulario() {
 function eliminarProducto(event) {
   if (event.target.classList.contains("delete")) {
     const id = event.target.getAttribute("data-id");
-
     // Realiza una solicitud al servidor para eliminar el producto por ID
-    fetch(`/productos/eliminar/${id}`, {
-      method: "GET", // Utiliza el método GET para esta solicitud
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.success) {
+    fetch(`/productos/eliminar/${id}`)
+      .then((res) => {
+        if (res.status) {
+          res.json().then((data) => {
+            productos = data;
+            actualizarTabla(productos);
+          });
           // Si la eliminación fue exitosa, actualiza la interfaz de usuario
-          const index = event.target.getAttribute("data-index");
-          productos.splice(index, 1);
-          actualizarTabla();
         } else {
           // Manejo de errores: muestra un mensaje de error o realiza otra acción en caso de error
           console.error("Error al eliminar el producto.");
@@ -101,31 +141,35 @@ function filtrarProductos() {
 }
 
 function guardarCambiosStock(event) {
-  if (event.target.classList.contains("editable")) {
-    const index = event.target.getAttribute("data-index");
-    const nuevoStock = event.target.textContent.trim();
+  console.log("prueba");
+  // if (event.target.classList.contains("editable")) {
+  //   const index = event.target.getAttribute("data-id");
+  //   console.log("prueba");
 
-    if (nuevoStock === "") {
-      event.target.textContent = productos[index].stock;
-    } else if (!isNaN(nuevoStock)) {
-      productos[index].stock = parseInt(nuevoStock, 10);
-    } else {
-      event.target.textContent = productos[index].stock;
-      alert("Por favor, ingrese un valor numérico válido.");
-    }
-  }
+  // const nuevoStock = event.target.textContent.trim();
+
+  //   if (nuevoStock === "") {
+  //     event.target.textContent = productos[index].stock;
+  //   } else if (!isNaN(nuevoStock)) {
+  //     productos[index].stock = parseInt(nuevoStock, 10);
+  //   } else {
+  //     event.target.textContent = productos[index].stock;
+  //     alert("Por favor, ingrese un valor numérico válido.");
+  //   }
+  // }
 }
-productTable.addEventListener("keydown", (event) => {
-  if (event.target.classList.contains("editable")) {
-    if (event.key === "Delete" || event.key === "Backspace") {
-      event.target.textContent = "";
-      event.preventDefault();
-    }
-  }
-});
+// prueba.addEventListener("keydown", (event) => {
+//   if (event.target.classList.contains("editable")) {
+//     if (event.key === "Delete" || event.key === "Backspace") {
+//       event.target.textContent = "";
+//       event.preventDefault();
+//     }
+//   }
+// });
 
 productTable.addEventListener("click", eliminarProducto);
 searchInput.addEventListener("input", filtrarProductos);
-productTable.addEventListener("input", guardarCambiosStock);
+prueba.addEventListener("input", guardarCambiosStock);
+productForm.addEventListener("submit", añadirProducto);
 
 obtenerProductos();
