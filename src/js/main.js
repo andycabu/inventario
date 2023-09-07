@@ -1,7 +1,6 @@
 const productForm = document.getElementById("productForm");
 const productTable = document.getElementById("product-table");
 const searchInput = document.getElementById("inputBusqueda");
-const prueba = document.getElementById("prueba");
 
 // Función para obtener productos desde el servidor
 let productos = [];
@@ -34,7 +33,7 @@ function actualizarTabla(productosEncontrados = productos) {
         <td>${producto.referencia}</td>
         <td>${fechaFormateada}</td>
         <td>${producto.categoria}</td>
-        <td class="editable" id="prueba" contentEditable="true" data-id="${producto._id}">${producto.stock}</td>
+        <td class="editable"  contentEditable="true" data-id="${producto._id}">${producto.stock}</td>
         <td>
             <button  class="delete" data-id="${producto._id}">Eliminar</button>
         </td>
@@ -141,35 +140,49 @@ function filtrarProductos() {
 }
 
 function guardarCambiosStock(event) {
-  console.log("prueba");
-  // if (event.target.classList.contains("editable")) {
-  //   const index = event.target.getAttribute("data-id");
-  //   console.log("prueba");
+  if (event.target.classList.contains("editable")) {
+    const index = event.target.getAttribute("data-id");
+    const nuevoStock = event.target.textContent.trim();
+    fetch(`/productos/actualizar/${index}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ stock: nuevoStock }),
+    }).then((res) => {
+      if (res.status) {
+        res.json().then((data) => {
+          productos = data;
+          console.log(productos);
+        });
+        // Si la eliminación fue exitosa, actualiza la interfaz de usuario
+      } else {
+        // Manejo de errores: muestra un mensaje de error o realiza otra acción en caso de error
+        console.error("Error al eliminar el producto.");
+      }
+    });
 
-  // const nuevoStock = event.target.textContent.trim();
-
-  //   if (nuevoStock === "") {
-  //     event.target.textContent = productos[index].stock;
-  //   } else if (!isNaN(nuevoStock)) {
-  //     productos[index].stock = parseInt(nuevoStock, 10);
-  //   } else {
-  //     event.target.textContent = productos[index].stock;
-  //     alert("Por favor, ingrese un valor numérico válido.");
-  //   }
-  // }
+    // if (nuevoStock === "") {
+    //   event.target.textContent = productos[index].stock;
+    // } else if (!isNaN(nuevoStock)) {
+    //   productos[index].stock = parseInt(nuevoStock, 10);
+    // } else {
+    //   event.target.textContent = productos[index].stock;
+    //   alert("Por favor, ingrese un valor numérico válido.");
+    // }
+  }
 }
-// prueba.addEventListener("keydown", (event) => {
-//   if (event.target.classList.contains("editable")) {
-//     if (event.key === "Delete" || event.key === "Backspace") {
-//       event.target.textContent = "";
-//       event.preventDefault();
-//     }
-//   }
-// });
-
-productTable.addEventListener("click", eliminarProducto);
-searchInput.addEventListener("input", filtrarProductos);
-prueba.addEventListener("input", guardarCambiosStock);
-productForm.addEventListener("submit", añadirProducto);
+productForm.addEventListener("keydown", (event) => {
+  if (event.target.classList.contains("editable")) {
+    if (event.key === "Delete" || event.key === "Backspace") {
+      event.target.textContent = "";
+      event.preventDefault();
+    }
+  }
+});
 
 obtenerProductos();
+productTable.addEventListener("click", eliminarProducto);
+searchInput.addEventListener("input", filtrarProductos);
+productTable.addEventListener("input", guardarCambiosStock);
+productForm.addEventListener("submit", añadirProducto);

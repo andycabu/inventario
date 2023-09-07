@@ -37,17 +37,17 @@ router.get("/productos/eliminar/:id", async (req, res) => {
   res.redirect("/productos");
 });
 
-router.get("/productos/editar/:id", async (req, res) => {
+router.put("/productos/editar/:id", async (req, res) => {
   const { id } = req.params;
-  await Productos.findByIdAndUpdate(id, req.body);
+  const { nuevoStock } = req.body;
+
+  const productoActualizado = await Productos.findById(id);
+
+  productoActualizado.stock = nuevoStock;
+
+  await productoActualizado.save();
+
   res.redirect("/productos");
 });
-
-// router.get("/update/:id", async (req, res) => {
-//   const { id } = req.params;
-//   await Productos.findByIdAndUpdate(id, req.body);
-
-//   res.redirect("/");
-// });
 
 export default router;
