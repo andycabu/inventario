@@ -23,6 +23,11 @@ function actualizarTabla(productosEncontrados = productos) {
   const tbody = document.querySelector("tbody");
   tbody.innerHTML = "";
   productosEncontrados.forEach((producto) => {
+    const editableElements = document.querySelectorAll(".editable");
+
+    editableElements.forEach((element) => {
+      element.addEventListener("blur", guardarCambiosStock);
+    });
     const row = document.createElement("tr");
     const fechaISO8601 = producto.fechaCaducidad;
     const fecha = new Date(fechaISO8601);
@@ -33,7 +38,7 @@ function actualizarTabla(productosEncontrados = productos) {
         <td>${producto.referencia}</td>
         <td>${fechaFormateada}</td>
         <td>${producto.categoria}</td>
-        <td class="editable"  contentEditable="true" data-id="${producto._id}">${producto.stock}</td>
+        <td class="editable"  contenteditable="true" data-id="${producto._id}">${producto.stock}</td>
         <td>
             <button  class="delete" data-id="${producto._id}">Eliminar</button>
         </td>
@@ -142,47 +147,31 @@ function filtrarProductos() {
 function guardarCambiosStock(event) {
   if (event.target.classList.contains("editable")) {
     const index = event.target.getAttribute("data-id");
-    const nuevoStock = event.target.textContent.trim();
-    fetch(`/productos/actualizar/${index}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ stock: nuevoStock }),
-    }).then((res) => {
-      if (res.status) {
-        res.json().then((data) => {
-          productos = data;
-          console.log(productos);
-        });
-        // Si la eliminación fue exitosa, actualiza la interfaz de usuario
-      } else {
-        // Manejo de errores: muestra un mensaje de error o realiza otra acción en caso de error
-        console.error("Error al eliminar el producto.");
-      }
-    });
-
-    // if (nuevoStock === "") {
-    //   event.target.textContent = productos[index].stock;
-    // } else if (!isNaN(nuevoStock)) {
-    //   productos[index].stock = parseInt(nuevoStock, 10);
-    // } else {
-    //   event.target.textContent = productos[index].stock;
-    //   alert("Por favor, ingrese un valor numérico válido.");
-    // }
-  }
-}
-productForm.addEventListener("keydown", (event) => {
-  if (event.target.classList.contains("editable")) {
-    if (event.key === "Delete" || event.key === "Backspace") {
-      event.target.textContent = "";
-      event.preventDefault();
+    const nuevoStock = event.target.textContent.trim() || 0;
+    console.log(nuevoStock);
+    console.log("Editar celda ID:", index, "Nuevo stock:", nuevoStock);
+    if (event.type === "blur") {
+      fetch(`/productos/editar/${index}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ stock: nuevoStock }),
+      }).then((res) => {
+        if (res.status) {
+          res.json().then((data) => {
+            // productos = data;
+          });
+          // Si la eliminación fue exitosa, actualiza la interfaz de usuario
+        } else {
+          // Manejo de errores: muestra un mensaje de error o realiza otra acción en caso de error
+          console.error("Error al modificar el stock.");
+        }
+      });
     }
   }
-});
-
+}
 obtenerProductos();
 productTable.addEventListener("click", eliminarProducto);
 searchInput.addEventListener("input", filtrarProductos);
-productTable.addEventListener("input", guardarCambiosStock);
 productForm.addEventListener("submit", añadirProducto);
