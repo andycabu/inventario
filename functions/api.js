@@ -11,7 +11,6 @@ api.use(express.json());
 api.use(express.urlencoded({ extended: false }));
 
 //Rutas
-
 api.use('/.netlify/functions/api', indexRoutes);
 
 export const handler = serverless(api);

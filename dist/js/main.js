@@ -1,24 +1,20 @@
 const productForm = document.getElementById("productForm");
 const productTable = document.getElementById("product-table");
 const searchInput = document.getElementById("inputBusqueda");
-// Función para obtener productos desde el servidor
+
 let productos = [];
 
 async function obtenerProductos() {
- try {
+try {
     const res = await fetch("/.netlify/functions/api/productos");
     if (!res.ok) {throw new Error("Error al obtener los productos");}
     const data = await res.json();
     productos.push(...data);
     actualizarTabla(productos);
   } catch (error) {
-    console.error(error);
+  console.error(error);
   }
-  
-  
 }
-
-// Llama a la función para obtener productos cuando la página se carga
 
 function actualizarTabla(productosEncontrados = productos) {
   const tbody = document.querySelector("tbody");
@@ -64,14 +60,16 @@ async function añadirProducto(event) {
     stock,
   };
 
+  fetch("/.netlify/functions/api/productos/agregar", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(producto),
+  });
+
   try{
-    const res = await fetch("/.netlify/functions/api/productos/agregar", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(producto),
-    });
+    const res = await fetch("/.netlify/functions/api/productos")
     if (!res.ok) {throw new Error("Error al añadir el producto");}
     const data = await res.json();
     productos = data;
@@ -79,7 +77,9 @@ async function añadirProducto(event) {
   }catch(error){
     console.error(error);
   }
+
   limpiarFormulario();
+
 }
 
 function limpiarFormulario() {
@@ -90,12 +90,10 @@ function limpiarFormulario() {
   document.getElementById("stock").value = "";
 }
 
-
-
 async function eliminarProducto(event) {
   if (event.target.classList.contains("delete")) {
     const id = event.target.getAttribute("data-id");
-    // Realiza una solicitud al servidor para eliminar el producto por ID
+    
    try{
     const res = await fetch(`/.netlify/functions/api/productos/eliminar/${id}`, {
       method: "GET",
@@ -111,12 +109,11 @@ async function eliminarProducto(event) {
 }
 
 async function filtrarProductos() {
-  // Obtén el valor del input de búsqueda
-  const filtro = document.getElementById("inputBusqueda").value;
 
-  // Verifica si filtro no es null ni una cadena vacía antes de hacer la búsqueda
+const filtro = document.getElementById("inputBusqueda").value;
+
   if (filtro !== null && filtro.trim() !== "") {
-    // Realiza una solicitud al servidor Express para buscar productos por nombre
+
     try{
       const res = await fetch(`/.netlify/functions/api/productos/buscar?nombre=${filtro}`);
       if (!res.ok) {throw new Error("Error al filtrar los productos");}
@@ -127,8 +124,7 @@ async function filtrarProductos() {
       console.error(error);
     }  
   } else {
-    // Si el campo de búsqueda está vacío, restablece la lista de productos al estado inicial
-    // Reemplaza esto con la lógica para obtener los productos iniciales
+  
     actualizarTabla(productos);
   }
 }
@@ -138,24 +134,25 @@ async function guardarCambiosStock(event) {
     const index = event.target.getAttribute("data-id");
     const nuevoStock = event.target.textContent.trim() || 0;
     if (event.type === "blur") {
+      fetch(`/.netlify/functions/api/productos/editar/${index}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ stock: nuevoStock }),
+      });
       try{
-        const res = await fetch(`/.netlify/functions/api/productos/editar/${index}`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ stock: nuevoStock }),
-        });
-        if (!res.ok) {throw new Error("Error al editar el producto");}
-        const data = await res.json();
-       
+        const res = await fetch("/.netlify/functions/api/productos")
+        if (!res.ok) {throw new Error("Error al modificar el stock");}
       }catch(error){
         console.error(error);
       }
     }
   }
 }
+
 obtenerProductos();
+
 productTable.addEventListener("click", eliminarProducto);
 searchInput.addEventListener("input", filtrarProductos);
 productForm.addEventListener("submit", añadirProducto);
