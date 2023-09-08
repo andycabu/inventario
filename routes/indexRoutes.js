@@ -3,20 +3,9 @@ import Productos from "../models/Productos.js";
 
 const router = Router();
 
-router.get('/', (req, res) => {
+router.get('/prueba', (req, res) => {
   // Ruta al archivo HTML que deseas enviar
-  const filePath = path.join(__dirname, 'dist', 'index.html');
-
-  // Lee el contenido del archivo HTML
-  fs.readFile(filePath, 'utf8', (err, html) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).send('Error al leer el archivo HTML');
-    }
-
-    // Envía el archivo HTML como respuesta
-    res.send(html);
-  });
+res.send("Hola mundo")
 });
 
 

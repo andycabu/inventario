@@ -1,8 +1,3 @@
-import {config} from "dotenv";
-config();
-
-const RUTA_FETCH = process.env.RUTA_FETCH;
-
 const productForm = document.getElementById("productForm");
 const productTable = document.getElementById("product-table");
 const searchInput = document.getElementById("inputBusqueda");
@@ -11,7 +6,7 @@ const searchInput = document.getElementById("inputBusqueda");
 let productos = [];
 
 function obtenerProductos() {
-  fetch(`${RUTA_FETCH}`)
+  fetch("/.netlify/functions/api/productos")
     .then((response) => response.json())
     .then((data) => {
       productos.push(...data);
