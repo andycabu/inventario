@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "styles": "npx tailwindcss -i .src/css/config.css -o .src/css/styles.css --watch",
-    "dev": "nodemon --exec babel-node src/index.js"
+    "styles": "npx tailwindcss -i .css/config.css -o .src/css/styles.css --watch",
+    "dev": "nodemon --exec babel-node index.js"
   },
   "author": "andycabu",
   "license": "ISC",
