@@ -1,14 +1,12 @@
 const productForm = document.getElementById("productForm");
 const productTable = document.getElementById("product-table");
 const searchInput = document.getElementById("inputBusqueda");
-
-const URL_HOST = "/.netlify/functions/api/productos";
 // Función para obtener productos desde el servidor
 let productos = [];
 
 async function obtenerProductos() {
  try {
-    const res = await fetch(URL_HOST);
+    const res = await fetch("/.netlify/functions/api/productos");
     if (!res.ok) {throw new Error("Error al obtener los productos");}
     const data = await res.json();
     productos.push(...data);
@@ -50,7 +48,7 @@ function actualizarTabla(productosEncontrados = productos) {
   });
 }
 
-function añadirProducto(event) {
+async function añadirProducto(event) {
   event.preventDefault();
   const nombre = document.getElementById("nombre").value;
   const referencia = document.getElementById("referencia").value;
@@ -66,7 +64,7 @@ function añadirProducto(event) {
     stock,
   };
 
-  fetch(`${URL_HOST}/agregar`, {
+  fetch(`/.netlify/functions/api/productos/agregar`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -100,26 +98,23 @@ function limpiarFormulario() {
   document.getElementById("stock").value = "";
 }
 
-function eliminarProducto(event) {
+
+
+async function eliminarProducto(event) {
   if (event.target.classList.contains("delete")) {
     const id = event.target.getAttribute("data-id");
     // Realiza una solicitud al servidor para eliminar el producto por ID
-    fetch(`${URL_HOST}/eliminar/${id}`)
-      .then((res) => {
-        if (res.status) {
-          res.json().then((data) => {
-            productos = data;
-            actualizarTabla(productos);
-          });
-          // Si la eliminación fue exitosa, actualiza la interfaz de usuario
-        } else {
-          // Manejo de errores: muestra un mensaje de error o realiza otra acción en caso de error
-          console.error("Error al eliminar el producto.");
-        }
-      })
-      .catch((error) => {
-        console.error("Error al eliminar el producto:", error);
-      });
+   try{
+    const res = await fetch(`/.netlify/functions/api/productos/eliminar/${id}`, {
+      method: "GET",
+    });
+    if (!res.ok) {throw new Error("Error al eliminar el producto");}
+    const data = await res.json();
+    productos = data;
+    actualizarTabla(productos);
+    }catch(error){
+      console.error(error);
+   }
   }
 }
 
@@ -130,7 +125,7 @@ function filtrarProductos() {
   // Verifica si filtro no es null ni una cadena vacía antes de hacer la búsqueda
   if (filtro !== null && filtro.trim() !== "") {
     // Realiza una solicitud al servidor Express para buscar productos por nombre
-    fetch(`${URL_HOST}/buscar?nombre=${filtro}`)
+    fetch(`/.netlify/functions/api/productos/buscar?nombre=${filtro}`)
       .then((response) => response.json())
       .then((data) => {
         // Procesa los resultados y actualiza la vista con los productos encontrados
@@ -152,7 +147,7 @@ function guardarCambiosStock(event) {
     const index = event.target.getAttribute("data-id");
     const nuevoStock = event.target.textContent.trim() || 0;
     if (event.type === "blur") {
-      fetch(`${URL_HOST}/editar/${index}`, {
+      fetch(`/.netlify/functions/api/productos/editar/${index}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

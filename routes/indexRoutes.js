@@ -1,13 +1,11 @@
 import { Router } from "express";
 import Productos from "../models/Productos.js";
+import {config} from 'dotenv'
+config()
+
+const PRODUCTOS = process.env.RUTA_FETCH;
 
 const router = Router();
-
-router.get('/prueba', (req, res) => {
-  // Ruta al archivo HTML que deseas enviar
-res.send("Hola mundo")
-});
-
 
 router.get("/productos", async (req, res) => {
   const productos = await Productos.find().lean();
@@ -18,7 +16,7 @@ router.post("/productos/agregar", async (req, res) => {
   try {
     const productos = Productos(req.body);
     await productos.save();
-    res.redirect("/productos");
+    res.redirect(PRODUCTOS);
   } catch (error) {
     console.log(error);
   }
@@ -36,13 +34,13 @@ router.get("/productos/buscar", async (req, res) => {
 router.get("/productos/eliminar/:id", async (req, res) => {
   const { id } = req.params;
   await Productos.findByIdAndDelete(id);
-  res.redirect("/productos");
+  res.redirect(PRODUCTOS);
 });
 
 router.post("/productos/editar/:id", async (req, res) => {
   const { id } = req.params;
   await Productos.findByIdAndUpdate(id, req.body);
-  res.redirect("/productos");
+  res.redirect(PRODUCTOS);
 });
 
 export default router;
