@@ -3,8 +3,10 @@ import Productos from "../models/Productos.js";
 
 const router = Router();
 
+
+
 router.get("/", (req, res) => {
-  res.render("index");
+  res.send("App iniciada");
 });
 
 router.get("/productos", async (req, res) => {
