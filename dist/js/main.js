@@ -64,29 +64,21 @@ async function añadirProducto(event) {
     stock,
   };
 
-  fetch(`/.netlify/functions/api/productos/agregar`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(producto),
-  })
-    .then((res) => {
-      if (res.status) {
-        res.json().then((data) => {
-          productos = data;
-          actualizarTabla(productos);
-        });
-        // Si la inserción fue exitosa, actualiza la interfaz de usuario
-      } else {
-        // Manejo de errores: muestra un mensaje de error o realiza otra acción en caso de error
-        console.error("Error al insertar el producto.");
-      }
-    })
-    .catch((error) => {
-      console.error("Error al insertar el producto:", error);
+  try{
+    const res = await fetch("/.netlify/functions/api/productos/agregar", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(producto),
     });
-
+    if (!res.ok) {throw new Error("Error al añadir el producto");}
+    const data = await res.json();
+    productos = data;
+    actualizarTabla(productos);
+  }catch(error){
+    console.error(error);
+  }
   limpiarFormulario();
 }
 
@@ -118,23 +110,22 @@ async function eliminarProducto(event) {
   }
 }
 
-function filtrarProductos() {
+async function filtrarProductos() {
   // Obtén el valor del input de búsqueda
   const filtro = document.getElementById("inputBusqueda").value;
 
   // Verifica si filtro no es null ni una cadena vacía antes de hacer la búsqueda
   if (filtro !== null && filtro.trim() !== "") {
     // Realiza una solicitud al servidor Express para buscar productos por nombre
-    fetch(`/.netlify/functions/api/productos/buscar?nombre=${filtro}`)
-      .then((response) => response.json())
-      .then((data) => {
-        // Procesa los resultados y actualiza la vista con los productos encontrados
-        const productosEncontrados = data.productosEncontrados;
-        actualizarTabla(productosEncontrados);
-      })
-      .catch((error) => {
-        console.error("Error al buscar productos:", error);
-      });
+    try{
+      const res = await fetch(`/.netlify/functions/api/productos/buscar?nombre=${filtro}`);
+      if (!res.ok) {throw new Error("Error al filtrar los productos");}
+      const data = await res.json();
+      productos = data.productosEncontrados;
+      actualizarTabla(productos);
+    }catch(error){
+      console.error(error);
+    }  
   } else {
     // Si el campo de búsqueda está vacío, restablece la lista de productos al estado inicial
     // Reemplaza esto con la lógica para obtener los productos iniciales
@@ -142,28 +133,25 @@ function filtrarProductos() {
   }
 }
 
-function guardarCambiosStock(event) {
+async function guardarCambiosStock(event) {
   if (event.target.classList.contains("editable")) {
     const index = event.target.getAttribute("data-id");
     const nuevoStock = event.target.textContent.trim() || 0;
     if (event.type === "blur") {
-      fetch(`/.netlify/functions/api/productos/editar/${index}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ stock: nuevoStock }),
-      }).then((res) => {
-        if (res.status) {
-          res.json().then((data) => {
-            // productos = data;
-          });
-          // Si la eliminación fue exitosa, actualiza la interfaz de usuario
-        } else {
-          // Manejo de errores: muestra un mensaje de error o realiza otra acción en caso de error
-          console.error("Error al modificar el stock.");
-        }
-      });
+      try{
+        const res = await fetch(`/.netlify/functions/api/productos/editar/${index}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ stock: nuevoStock }),
+        });
+        if (!res.ok) {throw new Error("Error al editar el producto");}
+        const data = await res.json();
+       
+      }catch(error){
+        console.error(error);
+      }
     }
   }
 }
