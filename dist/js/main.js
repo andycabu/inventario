@@ -148,8 +148,6 @@ function guardarCambiosStock(event) {
   if (event.target.classList.contains("editable")) {
     const index = event.target.getAttribute("data-id");
     const nuevoStock = event.target.textContent.trim() || 0;
-    console.log(nuevoStock);
-    console.log("Editar celda ID:", index, "Nuevo stock:", nuevoStock);
     if (event.type === "blur") {
       fetch(`/productos/editar/${index}`, {
         method: "POST",
