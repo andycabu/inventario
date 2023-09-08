@@ -1,5 +1,6 @@
-require("dotenv").config();
 import { connect } from "mongoose";
+import { config } from "dotenv";
+config();
 
 const SERVER = process.env.MONGODB_URI;
 

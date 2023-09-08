@@ -3,11 +3,12 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type":"module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "styles": "npx tailwindcss -i .dist/css/config.css -o .dist/css/styles.css --watch",
     "dev": "nodemon --exec babel-node /functions/api.js",
-    "build": "netlify deply --prod"
+    "build": "netlify deploy --prod"
   },
   "author": "andycabu",
   "license": "ISC",

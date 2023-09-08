@@ -1,3 +1,8 @@
+import {config} from "dotenv";
+config();
+
+const RUTA_FETCH = process.env.RUTA_FETCH;
+
 const productForm = document.getElementById("productForm");
 const productTable = document.getElementById("product-table");
 const searchInput = document.getElementById("inputBusqueda");
@@ -6,7 +11,7 @@ const searchInput = document.getElementById("inputBusqueda");
 let productos = [];
 
 function obtenerProductos() {
-  fetch("/productos")
+  fetch(`${RUTA_FETCH}`)
     .then((response) => response.json())
     .then((data) => {
       productos.push(...data);

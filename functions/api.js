@@ -12,7 +12,7 @@ api.use(express.urlencoded({ extended: false }));
 
 //Rutas
 
-api.use('/.netlify/functions/app', indexRoutes);
+api.use('/.netlify/functions/api', indexRoutes);
 
 export const handler = serverless(api);
 
