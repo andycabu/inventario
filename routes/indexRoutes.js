@@ -3,11 +3,10 @@ import Productos from "../models/Productos.js";
 
 const router = Router();
 
+router.get("/prueba", (req, res) => {
+  res.send("Hola mundo");
+})
 
-
-router.get("/", (req, res) => {
-  res.send("App iniciada");
-});
 
 router.get("/productos", async (req, res) => {
   const productos = await Productos.find().lean();
