@@ -1,8 +1,13 @@
 const productForm = document.getElementById("productForm");
 const productTable = document.getElementById("product-table");
 const searchInput = document.getElementById("inputBusqueda");
+const fechaCaducidad = document.getElementById("fechaCaducidad");
+const fechaActual = new Date();
 
 let productos = [];
+
+const fechaActualFormateada = fechaActual.toISOString().slice(0, 10);
+fechaCaducidad.value = fechaActualFormateada;
 
 async function obtenerProductos() {
 try {
@@ -20,11 +25,6 @@ function actualizarTabla(productosEncontrados = productos) {
   const tbody = document.querySelector("tbody");
   tbody.innerHTML = "";
   productosEncontrados.forEach((producto) => {
-    const editableElements = document.querySelectorAll(".editable");
-
-    editableElements.forEach((element) => {
-      element.addEventListener("blur", guardarCambiosStock);
-    });
     const row = document.createElement("tr");
     const fechaISO8601 = producto.fechaCaducidad;
     const fecha = new Date(fechaISO8601);
@@ -42,7 +42,12 @@ function actualizarTabla(productosEncontrados = productos) {
     `;
     tbody.appendChild(row);
   });
+  const editableElements = document.querySelectorAll(".editable");
+  editableElements.forEach((element) => {
+    element.addEventListener("blur", guardarCambiosStock);
+  });
 }
+
 function añadirProducto(event) {
   event.preventDefault();
   const nombre = document.getElementById("nombre").value;
@@ -100,39 +105,25 @@ function eliminarProducto(event) {
   }
 }
 
-
-// function filtrarProductos() {
-
-//   const filtro = document.getElementById("inputBusqueda").value;
-//     if (filtro !== null && filtro.trim() !== "") {
-//     fetch(`/.netlify/functions/api/productos/buscar?nombre=${filtro}`).then((res) => {
-//         if (!res.ok) {throw new Error("Error al filtrar los productos");}
-//         return res.json();
-//       }).then((data) => {
-//          productos = data 
-//         const { productosEncontrados } = productos;
-//         actualizarTabla(productosEncontrados);
-//       }).catch((error) => {
-//         console.error(error);
-//       });
-//   }}
-
 function filtrarProductos() {
-
-const filtro = document.getElementById("inputBusqueda").value;
-  if (filtro !== null && filtro.trim() !== "") {
-  fetch(`/.netlify/functions/api/productos/buscar?nombre=${filtro}`).then((res) => {
-      if (!res.ok) {throw new Error("Error al filtrar los productos");}
+  const filtro = document.getElementById("inputBusqueda").value;
+  fetch(`/.netlify/functions/api/productos/buscar?nombre=${filtro}`)
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error("Error al filtrar los productos");
+      }
       return res.json();
-    }).then((data) => {
-       productos = data 
-      const { productosEncontrados } = productos;
+    })
+    .then((data) => {
+      const { productosEncontrados } = data;
       actualizarTabla(productosEncontrados);
-    }).catch((error) => {
+    })
+    .catch((error) => {
       console.error(error);
     });
-}}
+}
 
+  
 function guardarCambiosStock(event) {
   if (event.target.classList.contains("editable")) {
     const index = event.target.getAttribute("data-id");
