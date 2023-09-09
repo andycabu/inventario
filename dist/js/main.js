@@ -130,10 +130,14 @@ const filtro = document.getElementById("inputBusqueda").value;
 async function guardarCambiosStock(event) {
   if (event.target.classList.contains("editable")) {
     const index = event.target.getAttribute("data-id");
-    const nuevoStock = event.target.textContent.trim() || 0;
+    const nuevoStock = event.target.textContent.trim() 
+    if (nuevoStock === "") {
+      actualizarTabla(productos);
+      return;
+    }
     if (event.type === "blur") {
       fetch(`/.netlify/functions/api/productos/editar/${index}`, {
-        method: "PUT",
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
@@ -141,6 +145,9 @@ async function guardarCambiosStock(event) {
       });
       try{
         const res = await fetch("/.netlify/functions/api/productos")
+        const data = await res.json();
+        console.log(data);
+        actualizarTabla(data);
         if (!res.ok) {throw new Error("Error al modificar el stock");}
       }catch(error){
         console.error(error);
