@@ -43,8 +43,7 @@ function actualizarTabla(productosEncontrados = productos) {
     tbody.appendChild(row);
   });
 }
-
-async function añadirProducto(event) {
+function añadirProducto(event) {
   event.preventDefault();
   const nombre = document.getElementById("nombre").value;
   const referencia = document.getElementById("referencia").value;
@@ -66,18 +65,15 @@ async function añadirProducto(event) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(producto),
-  });
-
-  try{
-    console.log("entra en el try");
-    const res = await fetch("/.netlify/functions/api/productos")
-    const data = await res.json();
-    console.log("respondio");
+  }).then((res) => {
     if (!res.ok) {throw new Error("Error al añadir el producto");}
-    actualizarTabla(data);
-  }catch(error){
+    return res.json();
+  }).then((data) => {
+    productos = data;
+    actualizarTabla(productos);
+  }).catch((error) => {
     console.error(error);
-  }
+  });
   limpiarFormulario();
 }
 
@@ -88,46 +84,56 @@ function limpiarFormulario() {
   document.getElementById("categoria").value = "";
   document.getElementById("stock").value = "";
 }
-
-async function eliminarProducto(event) {
+function eliminarProducto(event) {
   if (event.target.classList.contains("delete")) {
     const id = event.target.getAttribute("data-id");
-    
-   try{
-    const res = await fetch(`/.netlify/functions/api/productos/eliminar/${id}`, {
-      method: "GET",
-    });
-    if (!res.ok) {throw new Error("Error al eliminar el producto");}
-    const data = await res.json();
-    productos = data;
-    actualizarTabla(productos);
-    }catch(error){
+
+    fetch(`/.netlify/functions/api/productos/eliminar/${id}`).then((res) => {
+      if (!res.ok) {throw new Error("Error al eliminar el producto");}
+      return res.json();
+    }).then((data) => {
+      productos = data;
+      actualizarTabla(productos);
+    }).catch((error) => {
       console.error(error);
-   }
+    });
   }
 }
 
-async function filtrarProductos() {
+
+// function filtrarProductos() {
+
+//   const filtro = document.getElementById("inputBusqueda").value;
+//     if (filtro !== null && filtro.trim() !== "") {
+//     fetch(`/.netlify/functions/api/productos/buscar?nombre=${filtro}`).then((res) => {
+//         if (!res.ok) {throw new Error("Error al filtrar los productos");}
+//         return res.json();
+//       }).then((data) => {
+//          productos = data 
+//         const { productosEncontrados } = productos;
+//         actualizarTabla(productosEncontrados);
+//       }).catch((error) => {
+//         console.error(error);
+//       });
+//   }}
+
+function filtrarProductos() {
 
 const filtro = document.getElementById("inputBusqueda").value;
-
   if (filtro !== null && filtro.trim() !== "") {
-
-    try{
-      const res = await fetch(`/.netlify/functions/api/productos/buscar?nombre=${filtro}`);
+  fetch(`/.netlify/functions/api/productos/buscar?nombre=${filtro}`).then((res) => {
       if (!res.ok) {throw new Error("Error al filtrar los productos");}
-      const data = await res.json();
-      productosEncontrados = data.productosEncontrados;
+      return res.json();
+    }).then((data) => {
+       productos = data 
+      const { productosEncontrados } = productos;
       actualizarTabla(productosEncontrados);
-    }catch(error){
+    }).catch((error) => {
       console.error(error);
-    }  
-  } else {
-    actualizarTabla(productos);
-  }
-}
+    });
+}}
 
-async function guardarCambiosStock(event) {
+function guardarCambiosStock(event) {
   if (event.target.classList.contains("editable")) {
     const index = event.target.getAttribute("data-id");
     const nuevoStock = event.target.textContent.trim() 
@@ -136,22 +142,21 @@ async function guardarCambiosStock(event) {
       return;
     }
     if (event.type === "blur") {
-     await fetch(`/.netlify/functions/api/productos/editar/${index}`, {
+     fetch(`/.netlify/functions/api/productos/editar/${index}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ stock: nuevoStock }),
-      });
-      try{
-        const res = await fetch("/.netlify/functions/api/productos")
-        const data = await res.json();
+      }).then((res) => {
+        if (!res.ok) {throw new Error("Error al editar el stock");}
+        return res.json();
+      }).then((data) => {
         productos = data;
         actualizarTabla(productos);
-        if (!res.ok) {throw new Error("Error al modificar el stock");}
-      }catch(error){
+      }).catch((error) => {
         console.error(error);
-      }
+      });
     }
   }
 }
