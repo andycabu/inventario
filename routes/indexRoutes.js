@@ -37,7 +37,7 @@ router.get("/productos/eliminar/:id", async (req, res) => {
   res.redirect(PRODUCTOS);
 });
 
-router.post("/productos/editar/:id", async (req, res) => {
+router.put("/productos/editar/:id", async (req, res) => {
   const { id } = req.params;
   await Productos.findByIdAndUpdate(id, req.body);
   res.redirect(PRODUCTOS);

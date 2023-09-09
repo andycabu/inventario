@@ -133,7 +133,7 @@ async function guardarCambiosStock(event) {
     const nuevoStock = event.target.textContent.trim() || 0;
     if (event.type === "blur") {
       fetch(`/.netlify/functions/api/productos/editar/${index}`, {
-        method: "POST",
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
