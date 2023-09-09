@@ -136,7 +136,7 @@ async function guardarCambiosStock(event) {
       return;
     }
     if (event.type === "blur") {
-      fetch(`/.netlify/functions/api/productos/editar/${index}`, {
+     await fetch(`/.netlify/functions/api/productos/editar/${index}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -146,8 +146,8 @@ async function guardarCambiosStock(event) {
       try{
         const res = await fetch("/.netlify/functions/api/productos")
         const data = await res.json();
-        console.log(data);
-        actualizarTabla(data);
+        productos = data;
+        actualizarTabla(productos);
         if (!res.ok) {throw new Error("Error al modificar el stock");}
       }catch(error){
         console.error(error);
