@@ -7,11 +7,11 @@
     <link rel="stylesheet" href="./css/styles.css" />
   </head>
   <body>
-    <h1>Inventario de Productos</h1>
+    <h1 class="titles text-3xl">Inventario de Productos</h1>
     <div class="container">
       <div id="form-container">
-        <h2>Agregar Producto</h2>
-        <form id="productForm" method="POST">
+        <h2 class="titles text-xl">Agregar Producto</h2>
+        <form class="grid grid-cols-2 gap-3" id="productForm" method="POST">
           <input
             type="text"
             id="nombre"
@@ -56,7 +56,12 @@
       </div>
       <div id="table-container">
         <h2>Lista de Productos</h2>
-        <input type="text" id="inputBusqueda" placeholder="Buscar por nombre" />
+        <input
+          class="mb-4"
+          type="text"
+          id="inputBusqueda"
+          placeholder="Buscar por nombre"
+        />
         <table id="product-table">
           <thead>
             <tr>
