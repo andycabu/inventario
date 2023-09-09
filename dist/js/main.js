@@ -31,7 +31,7 @@ function actualizarTabla(productosEncontrados = productos) {
     const opciones = { year: "numeric", month: "numeric", day: "numeric" };
     const fechaFormateada = fecha.toLocaleDateString("es-ES", opciones);
     row.innerHTML = `
-        <td>${producto.nombre}</td>
+        <td class="editable">${producto.nombre}</td>
         <td>${producto.referencia}</td>
         <td>${fechaFormateada}</td>
         <td>${producto.categoria}</td>
@@ -69,17 +69,16 @@ async function añadirProducto(event) {
   });
 
   try{
+    console.log("entra en el try");
     const res = await fetch("/.netlify/functions/api/productos")
-    if (!res.ok) {throw new Error("Error al añadir el producto");}
     const data = await res.json();
-    productos = data;
-    actualizarTabla(productos);
+    console.log("respondio");
+    if (!res.ok) {throw new Error("Error al añadir el producto");}
+    actualizarTabla(data);
   }catch(error){
     console.error(error);
   }
-
   limpiarFormulario();
-
 }
 
 function limpiarFormulario() {
@@ -118,13 +117,12 @@ const filtro = document.getElementById("inputBusqueda").value;
       const res = await fetch(`/.netlify/functions/api/productos/buscar?nombre=${filtro}`);
       if (!res.ok) {throw new Error("Error al filtrar los productos");}
       const data = await res.json();
-      productos = data.productosEncontrados;
-      actualizarTabla(productos);
+      productosEncontrados = data.productosEncontrados;
+      actualizarTabla(productosEncontrados);
     }catch(error){
       console.error(error);
     }  
   } else {
-  
     actualizarTabla(productos);
   }
 }
